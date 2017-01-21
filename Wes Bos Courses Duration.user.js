@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Wes Bos Courses Duration
-// @namespace    http://tampermonkey.net/
-// @version      0.2
+// @namespace    https://github.com/xaxim/
+// @version      0.3
 // @description  Prints course duration on console
 // @author       xaxim
 // @match        https://javascript30.com/account/access/*
@@ -14,20 +14,21 @@
 // @match        https://masteringmarkdown.com/account/access/*
 // @match        https://*/account/access/*
 // @grant        none
+// @downloadURL  https://github.com/xaxim/wesbos-courses-duration/raw/master/Wes%20Bos%20Courses%20Duration.user.js
 // ==/UserScript==
 
-(function() {
+(function () {
     'use strict';
 
     const timeNodes = Array.from(document.querySelectorAll('.duration'));
 
     const seconds = timeNodes
-    .map(node => node.textContent)
-    .map(timeStr => {
-        const [mins, secs] = timeStr.split(':').map(parseFloat);
-        return mins * 60 + secs;
-    })
-    .reduce((total, current) => total + current);
+        .map(node => node.textContent)
+        .map(timeStr => {
+            const [mins, secs] = timeStr.split(':').map(parseFloat);
+            return mins * 60 + secs;
+        })
+        .reduce((total, current) => total + current);
 
     const minsPerHour = 60;
     const secsPerHour = minsPerHour * 60;
