@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Wes Bos Courses Duration
 // @namespace    https://github.com/xaxim/
-// @version      0.3
+// @version      0.4
 // @description  Prints course duration on console
 // @author       xaxim
 // @match        https://javascript30.com/account/access/*
@@ -17,29 +17,36 @@
 // @downloadURL  https://github.com/xaxim/wesbos-courses-duration/raw/master/Wes%20Bos%20Courses%20Duration.user.js
 // ==/UserScript==
 
-(function () {
-    'use strict';
+function getWesDuration(start = 0, end) {
+  const timeNodes = Array.from(document.querySelectorAll('.duration'));
+  const last = end || timeNodes.length;
 
-    const timeNodes = Array.from(document.querySelectorAll('.duration'));
+  const seconds = timeNodes
+    .filter((node) => {
+      const videoNumber = parseFloat(node.parentNode.parentNode.parentNode.querySelector('.video-number').textContent);
+      return videoNumber >= start && videoNumber <= last;
+    })
+    .map(node => node.textContent)
+    .map((timeStr) => {
+      const [mins, secs] = timeStr.split(':').map(parseFloat);
+      return (mins * 60) + secs;
+    })
+    .reduce((total, current) => total + current);
 
-    const seconds = timeNodes
-        .map(node => node.textContent)
-        .map(timeStr => {
-            const [mins, secs] = timeStr.split(':').map(parseFloat);
-            return mins * 60 + secs;
-        })
-        .reduce((total, current) => total + current);
+  const minsPerHour = 60;
+  const secsPerHour = minsPerHour * 60;
 
-    const minsPerHour = 60;
-    const secsPerHour = minsPerHour * 60;
+  let secondsLeft = seconds;
 
-    let secondsLeft = seconds;
+  const hours = Math.floor(secondsLeft / secsPerHour);
+  secondsLeft %= secsPerHour;
 
-    const hours = Math.floor(secondsLeft / secsPerHour);
-    secondsLeft = secondsLeft % secsPerHour;
+  const minutes = Math.floor(secondsLeft / minsPerHour);
+  secondsLeft %= minsPerHour;
 
-    const minutes = Math.floor(secondsLeft / minsPerHour);
-    secondsLeft = secondsLeft % minsPerHour;
+  /* eslint-disable */
+  console.log(`Duration of this course: ${hours} hours ${minutes} minutes and ${secondsLeft} seconds`);
+  /* eslint-enable */
+}
 
-    console.log(`Duration of this course: ${hours} hours ${minutes} minutes and ${secondsLeft} seconds`);
-})();
+getWesDuration();
